@@ -6,10 +6,11 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 from pydantic import ValidationError
+from config import OPENAI_API_KEY, OPENAI_API_BASE  # 导入配置
 import os
 
-os.environ["OPENAI_API_KEY"] = "sk-940a642633a0485199f4fe582ae1dbc6"
-os.environ["OPENAI_API_BASE"] = "https://api.deepseek.com"
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
 
 class QuestionEntities(BaseModel):
     target_entities: list[str] = Field(..., description="问题中涉及的核心实体列表")

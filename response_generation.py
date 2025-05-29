@@ -2,12 +2,16 @@
 #回答模块，用于生成回答文本
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
+from config import NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD  # 导入配置
+from config import OPENAI_API_KEY, OPENAI_API_BASE  # 导入配置
 import os
-os.environ["NEO4J_URI"] = "neo4j://localhost:7687"
-os.environ["NEO4J_USERNAME"] = "neo4j"
-os.environ["NEO4J_PASSWORD"] = "atomic-freddie-good-junior-master-5636"
-os.environ["OPENAI_API_KEY"] = "sk-940a642633a0485199f4fe582ae1dbc6"
-os.environ["OPENAI_API_BASE"] = "https://api.deepseek.com"
+os.environ["NEO4J_URI"] = NEO4J_URI
+os.environ["NEO4J_USERNAME"] = NEO4J_USERNAME
+os.environ["NEO4J_PASSWORD"] = NEO4J_PASSWORD
+
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
+
 
 class ResponseGenerator:
     def __init__(self):

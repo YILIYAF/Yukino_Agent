@@ -1,23 +1,24 @@
 # Description: 知识图谱管理器，负责将信息存入图数据库
-import asyncio
 from typing import Union
 from neo4j import GraphDatabase, Transaction
+from config import NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD  # 导入配置
 from information_extraction import EntityRelationExtractor, KnowledgeGraph  
 from information_extraction import EntityNode, RelationEdge
 import logging
 import os
+import asyncio
 
 #ne04j数据库连接信息，请在防火墙中开启端口7474的输入输出权限，否则无法连接
 #名字和密码改成自己的
-os.environ["NEO4J_URI"] = "neo4j://localhost:7687"
-os.environ["NEO4J_USERNAME"] = "neo4j"
-os.environ["NEO4J_PASSWORD"] = "atomic-freddie-good-junior-master-5636"
+os.environ["NEO4J_URI"] = NEO4J_URI
+os.environ["NEO4J_USERNAME"] = NEO4J_USERNAME
+os.environ["NEO4J_PASSWORD"] = NEO4J_PASSWORD
 
 class EnhancedNeo4jConnector:
     def __init__(self):
         self.driver = GraphDatabase.driver(
-            "bolt://localhost:7687",
-            auth=("neo4j", "atomic-freddie-good-junior-master-5636")
+            NEO4J_URI,
+            auth=(NEO4J_USERNAME, NEO4J_PASSWORD)
         )
         self.extractor = EntityRelationExtractor()  # 直接实例化信息抽取模块
         self.logger = logging.getLogger(__name__)

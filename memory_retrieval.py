@@ -2,28 +2,29 @@
 #从图数据库中检索记忆信息的模块，并生成string格式的记忆信息
 #（实际流程是只用了实体，然后查找出该实体3跳以内的所有关系一并发送给大模型）
 from neo4j import GraphDatabase
+from config import NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD  # 导入配置
 from typing import Optional
-import logging
 from question_processing import QuestionAnalyzer
 from response_generation import ResponseGenerator
+from config import OPENAI_API_KEY, OPENAI_API_BASE  # 导入配置
 import asyncio
 import textwrap
 import os
-
+import logging
 #ne04j数据库连接信息，请在防火墙中开启端口7474的输入输出权限，否则无法连接
 #名字和密码改成自己的
-os.environ["NEO4J_URI"] = "neo4j://localhost:7687"
-os.environ["NEO4J_USERNAME"] = "neo4j"
-os.environ["NEO4J_PASSWORD"] = "atomic-freddie-good-junior-master-5636"
+os.environ["NEO4J_URI"] = NEO4J_URI
+os.environ["NEO4J_USERNAME"] = NEO4J_USERNAME
+os.environ["NEO4J_PASSWORD"] = NEO4J_PASSWORD
 
-os.environ["OPENAI_API_KEY"] = "sk-940a642633a0485199f4fe582ae1dbc6"
-os.environ["OPENAI_API_BASE"] = "https://api.deepseek.com"
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENAI_API_BASE"] = OPENAI_API_BASE
 
 class MemoryRetriever:
     def __init__(self):
         self.driver = GraphDatabase.driver(
-            "bolt://localhost:7687",
-            auth=("neo4j", "atomic-freddie-good-junior-master-5636")
+            NEO4J_URI,
+            auth=(NEO4J_USERNAME, NEO4J_PASSWORD)
         )
         self.question_analyzer = QuestionAnalyzer()
         self.response_generator = ResponseGenerator()
@@ -132,8 +133,8 @@ class MemoryRetriever:
     async def process_question(self, question: str, userid: str) -> str:
         # 步骤1：分析问题
         analysis = await self.question_analyzer.analyze(question, userid)
-        print(f"\n[DEBUG] 问题分析结果：{analysis}")
-        print(f"[DEBUG] 执行查询：{analysis.target_entities}")
+        # print(f"\n[DEBUG] 问题分析结果：{analysis}")
+        # print(f"[DEBUG] 执行查询：{analysis.target_entities}")
         # 步骤2：查询图数据库
         memory_context = await self._query_graph(
             analysis.target_entities,
@@ -142,7 +143,7 @@ class MemoryRetriever:
         
         if not memory_context:
             memory_context = "暂时没有相关记忆"
-        print(f"[DEBUG] 原始记忆片段：\n{memory_context}")
+        # print(f"[DEBUG] 原始记忆片段：\n{memory_context}")
         # 步骤3：生成回答
         return await self.response_generator.generate(question, memory_context)
 async def main_flow():
